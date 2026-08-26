@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Property {
+  id        Int      @id @default(autoincrement())
+  title     String
+  city      String
+  type      String
+  guests    Int
+  price     Int
+  rating    Float
+  image     String
+  createdAt DateTime @default(now())
+}

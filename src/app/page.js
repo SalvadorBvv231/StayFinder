@@ -4,10 +4,12 @@ import SearchBar from "@/components/SearchBar";
 import TypeFilters from "@/components/TypeFilters";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
-import { listings } from "@/data/listings";
 import ListingCard from "@/components/ListingCard";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const listings = await prisma.property.findMany({ orderBy: { id: "asc" } });
+
   return (
     <main className="bg-white">
       <Navbar />
@@ -32,12 +34,14 @@ export default function Home() {
             <option>Mayor precio</option>
           </select>
         </div>
+
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
           ))}
         </div>
       </div>
+
       <CtaSection />
       <Footer />
     </main>

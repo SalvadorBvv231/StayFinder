@@ -1,14 +1,11 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { listings } from "@/data/listings";
+import { prisma } from "@/lib/prisma";
 
 export default async function ListingDetail({ params }) {
   const { id } = await params;
-
-  // TU TRABAJO: busca en `listings` el objeto cuyo id sea igual a Number(id)
-  // y guárdalo en una constante llamada `listing`. Usa el método .find()
-const listing = listings.find((item) => item.id === Number(id));
+  const listing = await prisma.property.findUnique({ where: { id: Number(id) } });
 
   if (!listing) {
     return (
