@@ -8,13 +8,46 @@ datasource db {
 }
 
 model Property {
-  id        Int      @id @default(autoincrement())
-  title     String
-  city      String
-  type      String
-  guests    Int
-  price     Int
-  rating    Float
-  image     String
+  id          Int           @id @default(autoincrement())
+  title       String
+  city        String
+  type        String
+  guests      Int
+  price       Int
+  rating      Float
+  image       String
+  createdAt   DateTime      @default(now())
+  Reservation Reservation[]
+}
+
+model Reservation {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  propertyId Int
+  startDate  DateTime
+  endDate    DateTime
+  guests     Int      @default(1)
+  totalPrice Int
+  status     String   @default("CONFIRMED")
+  createdAt  DateTime @default(now())
+  Property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  expiresAt DateTime
   createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  name        String
+  email       String        @unique
+  password    String
+  createdAt   DateTime      @default(now())
+  Reservation Reservation[]
+  Session     Session[]
 }

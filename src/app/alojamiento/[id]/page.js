@@ -3,12 +3,30 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BookingCard from "@/components/BookingCard";
 import { prisma } from "@/lib/prisma";
+import { getUser } from "@/app/actions/auth";
 
 export default async function ListingDetail({ params }) {
   const { id } = await params;
-  const listing = await prisma.property.findUnique({
-    where: { id: Number(id) },
-  });
+  const propertyId = Number(id);
+
+  const [listing, user, reservations] = await Promise.all([
+    prisma.property.findUnique({
+      where: { id: propertyId },
+    }),
+    getUser(),
+    prisma.reservation.findMany({
+      where: {
+        propertyId: propertyId,
+        status: "CONFIRMED",
+        endDate: { gte: new Date() },
+      },
+      select: {
+        startDate: true,
+        endDate: true,
+      },
+      orderBy: { startDate: "asc" },
+    }),
+  ]);
 
   if (!listing) {
     return (
@@ -32,6 +50,11 @@ export default async function ListingDetail({ params }) {
       </main>
     );
   }
+
+  const bookedRanges = reservations.map((r) => ({
+    startDate: r.startDate.toISOString().split("T")[0],
+    endDate: r.endDate.toISOString().split("T")[0],
+  }));
 
   return (
     <main className="min-h-screen bg-white">
@@ -83,7 +106,13 @@ export default async function ListingDetail({ params }) {
             </ul>
           </div>
 
-          <BookingCard price={listing.price} guestsMax={listing.guests} />
+          <BookingCard
+            propertyId={listing.id}
+            price={listing.price}
+            guestsMax={listing.guests}
+            bookedRanges={bookedRanges}
+            user={user}
+          />
         </div>
       </div>
 

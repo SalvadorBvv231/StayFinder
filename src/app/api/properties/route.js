@@ -10,7 +10,7 @@ export async function GET(request) {
     const sort = searchParams.get("sort");
 
     const where = {};
-
+    
     if (search) {
       where.OR = [
         { city: { contains: search, mode: "insensitive" } },
