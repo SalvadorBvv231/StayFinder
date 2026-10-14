@@ -7,7 +7,7 @@ export const listings = [
     guests: 4,
     price: 1250,
     rating: 4.8,
-    image: "https://loremflickr.com/600/400/cabin,lake?lock=11",
+    image: "/listings/cabana-lago.jpg",
   },
   {
     id: 2,
@@ -17,7 +17,7 @@ export const listings = [
     guests: 2,
     price: 900,
     rating: 4.5,
-    image: "https://loremflickr.com/600/400/apartment,livingroom?lock=22",
+    image: "/listings/departamento-centro.jpg",
   },
   {
     id: 3,
@@ -27,7 +27,7 @@ export const listings = [
     guests: 8,
     price: 2400,
     rating: 4.9,
-    image: "https://loremflickr.com/600/400/house,pool?lock=33",
+    image: "/listings/casa-alberca.jpg",
   },
   {
     id: 4,
@@ -37,7 +37,7 @@ export const listings = [
     guests: 3,
     price: 1650,
     rating: 4.7,
-    image: "https://loremflickr.com/600/400/loft,interior?lock=44",
+    image: "/listings/loft-moderno.jpg",
   },
   {
     id: 5,
@@ -47,7 +47,7 @@ export const listings = [
     guests: 6,
     price: 2100,
     rating: 4.9,
-    image: "https://loremflickr.com/600/400/colonial,house?lock=55",
+    image: "/listings/casa-colonial.jpg",
   },
   {
     id: 6,
@@ -57,6 +57,6 @@ export const listings = [
     guests: 4,
     price: 1800,
     rating: 4.6,
-    image: "https://loremflickr.com/600/400/beach,apartment?lock=66",
+    image: "/listings/departamento-playa.jpg",
   },
 ];
