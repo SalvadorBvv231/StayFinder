@@ -20,18 +20,26 @@ model Property {
   Reservation Reservation[]
 }
 
+enum ReservationStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  CANCELLED
+}
+
 model Reservation {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  propertyId Int
-  startDate  DateTime
-  endDate    DateTime
-  guests     Int      @default(1)
-  totalPrice Int
-  status     String   @default("CONFIRMED")
-  createdAt  DateTime @default(now())
-  Property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              Int               @id @default(autoincrement())
+  userId          Int
+  propertyId      Int
+  startDate       DateTime
+  endDate         DateTime
+  guests          Int               @default(1)
+  totalPrice      Int
+  status          ReservationStatus @default(PENDING_PAYMENT)
+  paymentProvider String?
+  paymentId       String?           @unique
+  createdAt       DateTime          @default(now())
+  Property        Property          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  User            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Session {
