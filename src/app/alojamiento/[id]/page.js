@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import BookingCard from "@/components/BookingCard";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "@/app/actions/auth";
+import { blockingStatusWhere } from "@/lib/reservations";
 
 export default async function ListingDetail({ params }) {
   const { id } = await params;
@@ -17,7 +18,7 @@ export default async function ListingDetail({ params }) {
     prisma.reservation.findMany({
       where: {
         propertyId: propertyId,
-        status: "CONFIRMED",
+        ...blockingStatusWhere(),
         endDate: { gte: new Date() },
       },
       select: {
