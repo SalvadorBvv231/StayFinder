@@ -5,6 +5,13 @@ import Footer from "@/components/Footer";
 import CancelReservationButton from "@/components/CancelReservationButton";
 import { prisma } from "@/lib/prisma";
 import { getUser } from "@/app/actions/auth";
+import { expireStalePending } from "@/lib/reservations";
+
+const statusBadge = {
+  CONFIRMED: { label: "Pagada", className: "bg-green-100 text-green-700" },
+  PENDING_PAYMENT: { label: "Pendiente de pago", className: "bg-amber-100 text-amber-700" },
+  CANCELLED: { label: "Cancelada", className: "bg-red-100 text-red-700" },
+};
 
 export default async function MisReservasPage() {
   const user = await getUser();
@@ -12,6 +19,8 @@ export default async function MisReservasPage() {
   if (!user) {
     redirect("/login");
   }
+
+  await expireStalePending({ userId: user.id });
 
   const reservations = await prisma.reservation.findMany({
     where: { userId: user.id },
@@ -23,7 +32,7 @@ export default async function MisReservasPage() {
   now.setUTCHours(0, 0, 0, 0);
 
   const upcoming = reservations.filter(
-    (r) => r.status === "CONFIRMED" && new Date(r.endDate) >= now
+    (r) => r.status !== "CANCELLED" && new Date(r.endDate) >= now
   );
 
   const pastOrCancelled = reservations.filter(
@@ -122,8 +131,10 @@ export default async function MisReservasPage() {
                                   <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-medium text-rose-600">
                                     {prop?.type}
                                   </span>
-                                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold text-green-700">
-                                    Confirmada
+                                  <span
+                                    className={`rounded-full px-2 py-0.5 text-xs font-bold ${statusBadge[res.status].className}`}
+                                  >
+                                    {statusBadge[res.status].label}
                                   </span>
                                 </div>
                                 <h3 className="mt-2 text-lg font-bold text-gray-900">
@@ -189,12 +200,12 @@ export default async function MisReservasPage() {
                             </h4>
                             <span
                               className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                                res.status === "CANCELLED"
-                                  ? "bg-red-100 text-red-700"
-                                  : "bg-gray-100 text-gray-600"
+                                res.status === "CONFIRMED"
+                                  ? "bg-gray-100 text-gray-600"
+                                  : statusBadge[res.status].className
                               }`}
                             >
-                              {res.status === "CANCELLED" ? "Cancelada" : "Completada"}
+                              {res.status === "CONFIRMED" ? "Completada" : statusBadge[res.status].label}
                             </span>
                           </div>
                           <p className="text-xs text-gray-400 mt-0.5">
