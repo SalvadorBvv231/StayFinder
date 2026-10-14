@@ -7,18 +7,20 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  await prisma.property.deleteMany();
-  await prisma.property.createMany({
-    data: listings.map((l) => ({
-      title: l.title,
-      city: l.city,
-      type: l.type,
-      guests: l.guests,
-      price: l.price,
-      rating: l.rating,
-      image: l.image,
-    })),
-  });
+  // Ids estables (los de listings.js) para que /alojamiento/1..6 no cambie al
+  // volver a sembrar. Upsert en vez de deleteMany: Reservation tiene
+  // onDelete: Cascade y borrar propiedades eliminaría las reservas.
+  const ids = listings.map((l) => l.id);
+  await prisma.property.deleteMany({ where: { id: { notIn: ids } } });
+  for (const { id, ...data } of listings) {
+    await prisma.property.upsert({
+      where: { id },
+      update: data,
+      create: { id, ...data },
+    });
+  }
+  // Al insertar ids explícitos la secuencia no avanza; se ajusta al máximo.
+  await prisma.$executeRaw`SELECT setval(pg_get_serial_sequence('"Property"', 'id'), (SELECT MAX(id) FROM "Property"))`;
   console.log("Listo");
 }
 
