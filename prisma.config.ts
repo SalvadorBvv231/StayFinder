@@ -7,8 +7,11 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    seed: "node prisma/seed.js",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Prisma CLI (migrate, db seed, studio) uses Neon's direct connection.
+    // The app runtime uses the pooled DATABASE_URL via the adapter in src/lib/prisma.js.
+    url: process.env["DIRECT_URL"],
   },
 });

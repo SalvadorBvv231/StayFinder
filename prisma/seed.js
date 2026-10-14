@@ -22,4 +22,11 @@ async function main() {
   console.log("Listo");
 }
 
-main();
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
